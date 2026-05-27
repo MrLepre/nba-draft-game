@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA All-Time Complete Draft Simulator</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0b0c10; color: #c5c6c7; text-align: center; padding: 20px; margin: 0; }
+        .container { max-width: 750px; margin: 30px auto; background: #1f2833; padding: 30px; border-radius: 15px; border: 1px solid #45f3ff; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        h1 { color: #45f3ff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+        .subtitle { color: #66fcf1; font-size: 14px; margin-bottom: 30px; }
+        .game-section { display: none; }
+        .active { display: block; }
+        .options-container { display: flex; justify-content: space-around; margin: 30px 0; }
+        .card { background: #0b0c10; padding: 25px; border-radius: 12px; width: 42%; cursor: pointer; transition: all 0.3s ease; border: 2px solid #45f3ff; }
+        .card:hover { transform: translateY(-5px); background: #45f3ff; color: #0b0c10; box-shadow: 0 0 15px #45f3ff; }
+        .card h3 { margin: 0 0 10px 0; font-size: 22px; }
+        button { background-color: #1f2833; color: #45f3ff; border: 2px solid #45f3ff; padding: 12px 40px; font-size: 18px; border-radius: 25px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        button:hover { background-color: #45f3ff; color: #0b0c10; box-shadow: 0 0 10px #45f3ff; }
+        button:disabled { border-color: #444; color: #444; cursor: not-allowed; }
+        .live-match { background: #0b0c10; border: 1px solid #66fcf1; padding: 20px; border-radius: 10px; height: 200px; overflow-y: auto; text-align: left; margin: 20px 0; font-family: monospace; }
+        .score-board { display: flex; justify-content: space-around; font-size: 32px; font-weight: bold; background: #0b0c10; padding: 15px; border-radius: 10px; border: 2px solid #45f3ff; margin-bottom: 20px; }
+        .p1-score { color: #ff4a4a; }
+        .p2-score { color: #4a90e2; }
+        .ticker-entry { padding: 5px 0; border-bottom: 1px solid #1f2833; font-size: 14px; color: #66fcf1; }
+        #loading-text { color: #ff9f43; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏀 NBA All-Time Simulator</h1>
+    <div class="subtitle">Conectado à lista real de todos os jogadores da história da NBA</div>
+    
+    <div id="tela-inicial" class="game-section active">
+        <p>Este simulador carrega dinamicamente a base histórica completa de atletas da NBA.</p>
+        <button id="btn-iniciar" onclick="carregarEIniciar()" disabled>Baixando Jogadores...</button>
+        <div id="loading-text">Aguarde um instante para sincronizar a lista completa...</div>
+    </div>
+
+    <div id="tela-draft" class="game-section">
+        <h2 id="turno-jogador">Jogador 1: Escolha seu Atleta</h2>
+        <p id="rodada-contagem" style="color: #66fcf1;">Rodada 1 de 5</p>
+        <div class="options-container">
+            <div id="card1" class="card" onclick="escolherJogador(0)">
+                <h3 id="nome1">---</h3>
+                <p id="status1">Atq: -- | Def: --</p>
+            </div>
+            <div id="card2" class="card" onclick="escolherJogador(1)">
+                <h3 id="nome2">---</h3>
+                <p id="status2">Atq: -- | Def: --</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tela-jogo" class="game-section">
+        <h2 style="color: #ff9f43;">LIVE - SIMULAÇÃO EM ANDAMENTO</h2>
+        <div class="score-board">
+            <div>JOGADOR 1 <br><span id="placar1-live" class="p1-score">0</span></div>
+            <div>vs</div>
+            <div>JOGADOR 2 <br><span id="placar2-live" class="p2-score">0</span></div>
+        </div>
+        <div id="ticker" class="live-match"></div>
+        <p id="cronometro" style="font-weight: bold; color: #ff4a4a;">Q1 | 12:00</p>
+    </div>
+
+    <div id="tela-resultado" class="game-section">
+        <h2>🏆 FIM DE JOGO! 🏆</h2>
+        <div class="score-board">
+            <div>Jogador 1: <span id="placar1-final" class="p1-score">0</span> PTS</div>
+            <div>Jogador 2: <span id="placar2-final" class="p2-score">0</span> PTS</div>
+        </div>
+        <h2 id="vencedor" style="color: #45f3ff; font-size: 36px;"></h2>
+        <button onclick="reiniciarJogo()" style="margin-top: 20px;">Jogar Novamente</button>
+    </div>
+</div>
+
+<script>
+    let todosOsJogadoresDA_NBA = [];
+    let poolTotal = [];
+    let time1 = []; let time2 = [];
+    let rodadaAtual = 1; let jogadorAtual = 1;
+    let opcoesAtuais = [];
+    let placar1 = 0; let placar2 = 0;
+
+    // Baixa dinamicamente todos os mais de 4800 jogadores da história usando dados abertos e unificados
+    async function baixarListaNBA() {
+        try {
+            const resposta = await fetch('https://githubusercontent.com');
+            const dados = await resposta.json();
+            
+            // Mapeia e higieniza a lista, gerando atributos competitivos (Ataque e Defesa) baseados no nome
+            todosOsJogadoresDA_NBA = dados.map(p => {
+                const nomeCompleto = `${p.firstName} ${p.lastName}`;
+                // Gera notas aleatórias realistas (entre 70 e 99) para dar competitividade ao jogo
+                const atq = Math.floor(Math.random() * 30) + 70;
+                const def = Math.floor(Math.random() * 30) + 70;
+                return { nome: nomeCompleto, atq: atq, def: def };
+            });
+
+            // Libera o botão de jogo
+            document.getElementById("btn-iniciar").innerText = "Iniciar Draft";
+            document.getElementById("btn-iniciar").disabled = false;
+            document.getElementById("loading-text").innerText = `Sucesso! ${todosOsJogadoresDA_NBA.length} jogadores históricos carregados.`;
+        } catch (erro) {
+            document.getElementById("loading-text").innerText = "Erro ao conectar. Rodando em modo de segurança local.";
+            document.getElementById("btn-iniciar").innerText = "Iniciar (Modo de Segurança)";
+            document.getElementById("btn-iniciar").disabled = false;
+            todosOsJogadoresDA_NBA = [
+                {nome:"Michael Jordan",atq:99,def:98},{nome:"LeBron James",atq:98,def:92},{nome:"Kobe Bryant",atq:97,def:94},
+                {nome:"Stephen Curry",atq:99,def:75},{nome:"Shaquille O'Neal",atq:98,def:90},{nome:"Kevin Durant",atq:97,def:84}
+            ];
+        }
+    }
+
+    function carregarEIniciar() {
+        // Embaralha absolutamente todos os jogadores carregados
+        poolTotal = [...todosOsJogadoresDA_NBA].sort(() => Math.random() - 0.5);
+        
+        time1 = []; time2 = [];
+        rodadaAtual = 1; jogadorAtual = 1;
+        
+        mudarTela("tela-inicial", "tela-draft");
+        gerarOpcoes();
+    }
+
+    function mudarTela(esconder, mostrar) {
+        document.getElementById(esconder).classList.remove("active");
+        document.getElementById(mostrar).classList.add("active");
+    }
+
+    function gerarOpcoes() {
+        if (rodadaAtual > 5 || poolTotal.length < 2) {
+            comecarTransmissaoJogo();
+            return;
+        }
+        document.getElementById("turno-jogador").innerText = `Jogador ${jogadorAtual}: Escolha seu Atleta`;
+        document.getElementById("rodada-contagem").innerText = `Rodada ${rodadaAtual} de 5`;
+
+        opcoesAtuais = [poolTotal.pop(), poolTotal.pop()];
+        document.getElementById("nome1").innerText = opcoesAtuais[0].nome;
+        document.getElementById("status1").innerText = `Atq: ${opcoesAtuais[0].atq} | Def: ${opcoesAtuais[0].def}`;
+        document.getElementById("nome2").innerText = opcoesAtuais[1].nome;
+        document.getElementById("status2").innerText = `Atq: ${opcoesAtuais[1].atq} | Def: ${opcoesAtuais[1].def}`;
+    }
+
+    function escolherJogador(indice) {
+        let escolhido = opcoesAtuais[indice];
+        if (jogadorAtual === 1) {
+            time1.push(escolhido);
+            jogadorAtual = 2;
+        } else {
+            time2.push(escolhido);
+            jogadorAtual = 1;
+            rodadaAtual++;
+        }
+        gerarOpcoes();
+    }
+
+    function comecarTransmissaoJogo() {
+        mudarTela("tela-draft", "tela-jogo");
+        placar1 = 0; placar2 = 0;
+        document.getElementById("ticker").innerHTML = "";
+
+        let atq1 = time1.reduce((sum, j) => sum + j.atq, 0) / 5;
+        let def1 = time1.reduce((sum, j) => sum + j.def, 0) / 5;
+        let atq2 = time2.reduce((sum, j) => sum + j.atq, 0) / 5;
+        let def2 = time2.reduce((sum, j) => sum + j.def, 0) / 5;
+
+        let lanceAtual = 0;
+        const totalLances = 20;
+
+        let intervalo = setInterval(() => {
+            if (lanceAtual >= totalLances) {
+                clearInterval(intervalo);
+                mostrarResultadoFinal();
+                return;
+            }
+
+            let quarto = Math.floor(lanceAtual / 5) + 1;
+            let minutos = 12 - ((lanceAtual % 5) * 2.4);
+            document.getElementById("cronometro").innerText = `Q${quarto} | ${Math.floor(minutos)}:00`;
+
+            let ticker = document.getElementById("ticker");
+            let textoLance = "";
+
+            if (lanceAtual % 2 === 0) {
+                let j = time1[Math.floor(Math.random() * 5)];
+                let chance = Math.floor(Math.random() * 60) + 40 + (atq1 - def2);
+                if (chance > 66) {
+                    let pts = Math.random() > 0.7 ? 3 : 2;
+                    placar1 += pts;
+                    textoLance = `[JOGADOR 1] 🔥 Cesta de ${j.nome}! Pontuou com mais ${pts} pontos de curta distância.`;
+                } else {
+                    textoLance = `[JOGADOR 1] ❌ Errou! O ataque parou na forte marcação adversária.`;
+                }
+            } else {
+                let j = time2[Math.floor(Math.random() * 5)];
+let chance = Math.floor(Math.random() * 60) + 40 + (atq2 - def1);if (chance > 66) {let pts = Math.random() > 0.7 ? 3 : 2;placar2 += pts;textoLance = [JOGADOR 2] 🔥 Convertido! ${j.nome} pontuou com uma bela infiltração de ${pts} pontos.;} else {textoLance = [JOGADOR 2] ❌ Desperdiçado! Erro no passe e posse de bola perdida.;}}document.getElementById("placar1-live").innerText = placar1;document.getElementById("placar2-live").innerText = placar2;ticker.innerHTML = <div class="ticker-entry">${textoLance}</div> + ticker.innerHTML;lanceAtual++;}, 1200);}function mostrarResultadoFinal() {mudarTela("tela-jogo", "tela-resultado");document.getElementById("placar1-final").innerText = placar1;document.getElementById("placar2-final").innerText = placar2;let res = "";if (placar1 > placar2) res = "🎉 JOGADOR 1 VENCEU A PARTIDA!";else if (placar2 > placar1) res = "🎉 JOGADOR 2 VENCEU A PARTIDA!";else res = "🤝 EMPATE! PRORROGAÇÃO AMIGÁVEL!";document.getElementById("vencedor").innerText = res;}function reiniciarJogo() { mudarTela("tela-resultado", "tela-inicial"); carregarEIniciar(); }// Executa a busca assim que abre a páginabaixarListaNBA();
