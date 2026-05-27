@@ -1,268 +1,649 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA All-Time Complete Draft Simulator</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #0b0c10; color: #c5c6c7; text-align: center; padding: 20px; margin: 0; }
-        .container { max-width: 750px; margin: 30px auto; background: #1f2833; padding: 30px; border-radius: 15px; border: 1px solid #45f3ff; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
-        h1 { color: #45f3ff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
-        .subtitle { color: #66fcf1; font-size: 14px; margin-bottom: 30px; }
-        .game-section { display: none; }
-        .active { display: block !important; }
-        .options-container { display: flex; justify-content: space-around; margin: 30px 0; }
-        .card { background: #0b0c10; padding: 20px; border-radius: 12px; width: 44%; cursor: pointer; transition: all 0.3s ease; border: 2px solid #45f3ff; text-align: center; }
-        .card:hover { transform: translateY(-5px); background: #45f3ff; color: #0b0c10; box-shadow: 0 0 15px #45f3ff; }
-        .card h3 { margin: 10px 0 5px 0; font-size: 20px; min-height: 50px; display: flex; align-items: center; justify-content: center; }
-        .player-img { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 3px solid #45f3ff; background-color: #1f2833; margin: 0 auto; display: block; }
-        .card:hover .player-img { border-color: #0b0c10; }
-        button { background-color: #1f2833; color: #45f3ff; border: 2px solid #45f3ff; padding: 12px 40px; font-size: 18px; border-radius: 25px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
-        button:hover { background-color: #45f3ff; color: #0b0c10; box-shadow: 0 0 10px #45f3ff; }
-        .live-match { background: #0b0c10; border: 1px solid #66fcf1; padding: 20px; border-radius: 10px; height: 200px; overflow-y: auto; text-align: left; margin: 20px 0; font-family: monospace; }
-        .score-board { display: flex; justify-content: space-around; font-size: 32px; font-weight: bold; background: #0b0c10; padding: 15px; border-radius: 10px; border: 2px solid #45f3ff; margin-bottom: 20px; }
-        .p1-score { color: #ff4a4a; }
-        .p2-score { color: #4a90e2; }
-        .ticker-entry { padding: 5px 0; border-bottom: 1px solid #1f2833; font-size: 14px; color: #66fcf1; }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>NBA All-Time Draft Simulator</title>
+
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #0b0c10;
+        color: #c5c6c7;
+        text-align: center;
+        padding: 20px;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 750px;
+        margin: 30px auto;
+        background: #1f2833;
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid #45f3ff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    }
+
+    h1 {
+        color: #45f3ff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 5px;
+    }
+
+    .subtitle {
+        color: #66fcf1;
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    .game-section {
+        display: none;
+    }
+
+    .active {
+        display: block !important;
+    }
+
+    .options-container {
+        display: flex;
+        justify-content: space-around;
+        gap: 20px;
+        margin: 30px 0;
+        flex-wrap: wrap;
+    }
+
+    .card {
+        background: #0b0c10;
+        padding: 20px;
+        border-radius: 12px;
+        width: 280px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid #45f3ff;
+        text-align: center;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        background: #45f3ff;
+        color: #0b0c10;
+        box-shadow: 0 0 15px #45f3ff;
+    }
+
+    .card h3 {
+        margin: 10px 0 5px 0;
+        font-size: 20px;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .player-img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #45f3ff;
+        background-color: #1f2833;
+        margin: 0 auto;
+        display: block;
+    }
+
+    .card:hover .player-img {
+        border-color: #0b0c10;
+    }
+
+    button {
+        background-color: #1f2833;
+        color: #45f3ff;
+        border: 2px solid #45f3ff;
+        padding: 12px 40px;
+        font-size: 18px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    button:hover {
+        background-color: #45f3ff;
+        color: #0b0c10;
+        box-shadow: 0 0 10px #45f3ff;
+    }
+
+    .live-match {
+        background: #0b0c10;
+        border: 1px solid #66fcf1;
+        padding: 20px;
+        border-radius: 10px;
+        height: 250px;
+        overflow-y: auto;
+        text-align: left;
+        margin: 20px 0;
+        font-family: monospace;
+    }
+
+    .score-board {
+        display: flex;
+        justify-content: space-around;
+        font-size: 32px;
+        font-weight: bold;
+        background: #0b0c10;
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #45f3ff;
+        margin-bottom: 20px;
+    }
+
+    .p1-score {
+        color: #ff4a4a;
+    }
+
+    .p2-score {
+        color: #4a90e2;
+    }
+
+    .ticker-entry {
+        padding: 5px 0;
+        border-bottom: 1px solid #1f2833;
+        font-size: 14px;
+        color: #66fcf1;
+    }
+</style>
 </head>
+
 <body>
 
 <div class="container">
-    <h1>🏀 NBA All-Time Simulator</h1>
-    <div class="subtitle">Draft competitivo com fotos sincronizadas via Wikipédia</div>
-    
-    <div id="tela-inicial" class="game-section active">
-        <p>Este simulador contém a base de estrelas com busca automatizada de imagens.</p>
-        <button id="btn-iniciar" onclick="carregarEIniciar()">Iniciar Draft</button>
+
+    <h1>🏀 NBA ALL-TIME SIMULATOR</h1>
+
+    <div class="subtitle">
+        Banco de dados offline com lendas de todas as eras da NBA
     </div>
 
+    <!-- TELA INICIAL -->
+    <div id="tela-inicial" class="game-section active">
+
+        <p>
+            Este simulador contém a base histórica de estrelas e astros da NBA.
+        </p>
+
+        <button onclick="carregarEIniciar()">
+            INICIAR DRAFT
+        </button>
+
+        <p style="margin-top:20px;color:#66fcf1;">
+            Banco de dados integrado e pronto para jogar!
+        </p>
+
+    </div>
+
+    <!-- TELA DRAFT -->
     <div id="tela-draft" class="game-section">
-        <h2 id="turno-jogador">Jogador 1: Escolha seu Atleta</h2>
-        <p id="rodada-contagem" style="color: #66fcf1;">Rodada 1 de 5</p>
+
+        <h2 id="turno-jogador">
+            Jogador 1: Escolha seu Atleta
+        </h2>
+
+        <p id="rodada-contagem" style="color:#66fcf1;">
+            Rodada 1 de 5
+        </p>
+
         <div class="options-container">
+
             <div id="card1" class="card" onclick="escolherJogador(0)">
                 <img id="img1" class="player-img" src="" alt="Foto">
                 <h3 id="nome1">---</h3>
                 <p id="status1">Atq: -- | Def: --</p>
             </div>
+
             <div id="card2" class="card" onclick="escolherJogador(1)">
                 <img id="img2" class="player-img" src="" alt="Foto">
                 <h3 id="nome2">---</h3>
                 <p id="status2">Atq: -- | Def: --</p>
             </div>
+
         </div>
+
     </div>
 
+    <!-- TELA JOGO -->
     <div id="tela-jogo" class="game-section">
-        <h2 style="color: #ff9f43;">LIVE - SIMULAÇÃO EM ANDAMENTO</h2>
+
+        <h2 style="color:#ff9f43;">
+            LIVE - SIMULAÇÃO EM ANDAMENTO
+        </h2>
+
         <div class="score-board">
-            <div>JOGADOR 1 <br><span id="placar1-live" class="p1-score">0</span></div>
+
+            <div>
+                JOGADOR 1
+                <br>
+                <span id="placar1-live" class="p1-score">0</span>
+            </div>
+
             <div>vs</div>
-            <div>JOGADOR 2 <br><span id="placar2-live" class="p2-score">0</span></div>
+
+            <div>
+                JOGADOR 2
+                <br>
+                <span id="placar2-live" class="p2-score">0</span>
+            </div>
+
         </div>
+
         <div id="ticker" class="live-match"></div>
-        <p id="cronometro" style="font-weight: bold; color: #ff4a4a;">Q1 | 12:00</p>
+
+        <p id="cronometro" style="font-weight:bold;color:#ff4a4a;">
+            Q1 | 12:00
+        </p>
+
     </div>
 
+    <!-- RESULTADO -->
     <div id="tela-resultado" class="game-section">
+
         <h2>🏆 FIM DE JOGO! 🏆</h2>
+
         <div class="score-board">
-            <div>Jogador 1: <span id="placar1-final" class="p1-score">0</span> PTS</div>
-            <div>Jogador 2: <span id="placar2-final" class="p2-score">0</span> PTS</div>
+
+            <div>
+                Jogador 1:
+                <span id="placar1-final" class="p1-score">0</span>
+                PTS
+            </div>
+
+            <div>
+                Jogador 2:
+                <span id="placar2-final" class="p2-score">0</span>
+                PTS
+            </div>
+
         </div>
-        <h2 id="vencedor" style="color: #45f3ff; font-size: 36px;"></h2>
-        <button onclick="reiniciarJogo()" style="margin-top: 20px;">Jogar Novamente</button>
+
+        <h2 id="vencedor" style="color:#45f3ff;font-size:36px;"></h2>
+
+        <button onclick="reiniciarJogo()" style="margin-top:20px;">
+            Jogar Novamente
+        </button>
+
     </div>
+
 </div>
 
 <script>
-    const BANCO_JOGADORES = [
-        {nome:"Michael Jordan",atq:99,def:98},{nome:"LeBron James",atq:98,def:92},{nome:"Kobe Bryant",atq:97,def:94},{nome:"Stephen Curry",atq:99,def:75},
-        {nome:"Shaquille O'Neal",atq:98,def:90},{nome:"Kareem Abdul-Jabbar",atq:97,def:93},{nome:"Magic Johnson",atq:96,def:85},{nome:"Larry Bird",atq:96,def:88},
-        {nome:"Kevin Durant",atq:97,def:84},{nome:"Giannis Antetokounmpo",atq:94,def:96},{nome:"Wilt Chamberlain",atq:98,def:95},{nome:"Tim Duncan",atq:92,def:97},
-        {nome:"Hakeem Olajuwon",atq:95,def:98},{nome:"Allen Iverson",atq:94,def:72},{nome:"Nikola Jokic",atq:98,def:78},{nome:"Luka Doncic",atq:97,def:76},
-        {nome:"Victor Wembanyama",atq:92,def:99},{nome:"Kawhi Leonard",atq:92,def:95},{nome:"Dwyane Wade",atq:93,def:89},{nome:"Chris Paul",atq:89,def:90},
-        {nome:"James Harden",atq:95,def:72},{nome:"Dirk Nowitzki",atq:96,def:78},{nome:"Kevin Garnett",atq:91,def:96},{nome:"Anthony Davis",atq:91,def:95},
-        {nome:"Jayson Tatum",atq:91,def:87},{nome:"Joel Embiid",atq:94,def:89},{nome:"Russell Westbrook",atq:90,def:78},{nome:"Damian Lillard",atq:93,def:68},
-        {nome:"Reggie Miller",atq:92,def:74},{nome:"Ray Allen",atq:93,def:76},{nome:"Tracy McGrady",atq:94,def:80},{nome:"Vince Carter",atq:91,def:76},
-        {nome:"Kyrie Irving",atq:96,def:72},{nome:"Anthony Edwards",atq:92,def:85},{nome:"Ja Morant",atq:91,def:70},{nome:"Shai Gilgeous-Alexander",atq:94,def:87},
-        {nome:"Jimmy Butler",atq:89,def:92},{nome:"Paul George",atq:89,def:88},{nome:"Devin Booker",atq:91,def:76},{nome:"Klay Thompson",atq:89,def:85}
-    ];
 
-    const FN = ["John","Robert","James","Charles","David","Michael","William","Brian","Gary","Alonzo","Dennis","Paul","Ray","Steve","Jason","Carmelo","Yao","Derrick","Amar'e","Baron"];
-    const LN = ["Smith","Jones","Brown","Johnson","Williams","Miller","Davis","Robinson","Barkley","Rodman","Pierce","Allen","Nash","Kidd","Anthony","McGrady","Ming","Rose","Stoudemire","Walker"];
+const BANCO_JOGADORES = [
 
-    const SILHUETA_PADRAO = "https://unsplash.com";
+    {nome:"Michael Jordan",atq:99,def:98},
+    {nome:"LeBron James",atq:98,def:92},
+    {nome:"Kobe Bryant",atq:97,def:94},
+    {nome:"Stephen Curry",atq:99,def:75},
+    {nome:"Shaquille O'Neal",atq:98,def:90},
+    {nome:"Kareem Abdul-Jabbar",atq:97,def:93},
+    {nome:"Magic Johnson",atq:96,def:85},
+    {nome:"Larry Bird",atq:96,def:88},
+    {nome:"Kevin Durant",atq:97,def:84},
+    {nome:"Giannis Antetokounmpo",atq:94,def:96},
+    {nome:"Wilt Chamberlain",atq:98,def:95},
+    {nome:"Tim Duncan",atq:92,def:97},
+    {nome:"Hakeem Olajuwon",atq:95,def:98},
+    {nome:"Allen Iverson",atq:94,def:72},
+    {nome:"Nikola Jokic",atq:98,def:78},
+    {nome:"Luka Doncic",atq:97,def:76},
+    {nome:"Victor Wembanyama",atq:92,def:99},
+    {nome:"Kawhi Leonard",atq:92,def:95},
+    {nome:"Dwyane Wade",atq:93,def:89},
+    {nome:"Chris Paul",atq:89,def:90}
 
-    function gerarJogadorHistorico() {
-        let n = FN[Math.floor(Math.random() * FN.length)];
-        let s = LN[Math.floor(Math.random() * LN.length)];
-        return {
-            nome: `${n} ${s} (Histórico)`,
-            atq: Math.floor(Math.random() * 21) + 68,
-            def: Math.floor(Math.random() * 21) + 68,
-            isGeneric: true
-        };
-    }
+];
 
-    let poolTotal = [];
-    let time1 = []; let time2 = [];
-    let rodadaAtual = 1; let jogadorAtual = 1;
-    let opcoesAtuais = [];
-    let placar1 = 0; let placar2 = 0;
+const FN = [
+    "John","Robert","James","Charles","David",
+    "Michael","William","Brian","Gary","Dennis"
+];
 
-    async function buscarFotoJogador(nomeJogador, idImg) {
-        const elementoImg = document.getElementById(idImg);
-        try {
-            const url = `https://wikipedia.org{encodeURIComponent(nomeJogador)}&origin=*`;
-            const resposta = await fetch(url);
-            const dados = await resposta.json();
-            const paginas = dados.query.pages;
-            const paginaId = Object.keys(paginas);
-            
-            if (paginaId[0] !== "-1" && paginas[paginaId[0]].original) {
-                elementoImg.src = paginas[paginaId[0]].original.source;
-            } else {
-                elementoImg.src = SILHUETA_PADRAO;
-            }
-        } catch (e) {
+const LN = [
+    "Smith","Jones","Brown","Johnson","Williams",
+    "Miller","Davis","Robinson","Allen","Walker"
+];
+
+const SILHUETA_PADRAO =
+"https://via.placeholder.com/140x140?text=NBA";
+
+function gerarJogadorHistorico() {
+
+    let n = FN[Math.floor(Math.random() * FN.length)];
+    let s = LN[Math.floor(Math.random() * LN.length)];
+
+    return {
+        nome: `${n} ${s} (Histórico)`,
+        atq: Math.floor(Math.random() * 21) + 68,
+        def: Math.floor(Math.random() * 21) + 68,
+        isGeneric: true
+    };
+}
+
+let poolTotal = [];
+
+let time1 = [];
+let time2 = [];
+
+let rodadaAtual = 1;
+let jogadorAtual = 1;
+
+let opcoesAtuais = [];
+
+let placar1 = 0;
+let placar2 = 0;
+
+async function buscarFotoJogador(nomeJogador, idImg) {
+
+    const elementoImg = document.getElementById(idImg);
+
+    try {
+
+        const url =
+`https://pt.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(nomeJogador)}&prop=pageimages&format=json&pithumbsize=300&origin=*`;
+
+        const resposta = await fetch(url);
+
+        const dados = await resposta.json();
+
+        const paginas = dados.query.pages;
+
+        const paginaId = Object.keys(paginas)[0];
+
+        if (
+            paginaId !== "-1" &&
+            paginas[paginaId].thumbnail
+        ) {
+
+            elementoImg.src =
+            paginas[paginaId].thumbnail.source;
+
+        } else {
+
             elementoImg.src = SILHUETA_PADRAO;
         }
+
+    } catch (e) {
+
+        console.error("Erro:", e);
+
+        elementoImg.src = SILHUETA_PADRAO;
+    }
+}
+
+function mudarTela(esconder, mostrar) {
+
+    document.getElementById(esconder)
+        .classList.remove("active");
+
+    document.getElementById(mostrar)
+        .classList.add("active");
+}
+
+function carregarEIniciar() {
+
+    poolTotal = [...BANCO_JOGADORES];
+
+    for (let i = 0; i < 50; i++) {
+        poolTotal.push(gerarJogadorHistorico());
     }
 
-    function carregarEIniciar() {
-        poolTotal = [...BANCO_JOGADORES];
-        for(let i=0; i<100; i++) {
-            poolTotal.push(gerarJogadorHistorico());
-        }
-        poolTotal.sort(() => Math.random() - 0.5);
+    poolTotal.sort(() => Math.random() - 0.5);
 
-        time1 = []; time2 = [];
-        rodadaAtual = 1; jogadorAtual = 1;
-        mudarTela("tela-inicial", "tela-draft");
-        gerarOpcoes();
+    time1 = [];
+    time2 = [];
+
+    rodadaAtual = 1;
+    jogadorAtual = 1;
+
+    mudarTela("tela-inicial", "tela-draft");
+
+    gerarOpcoes();
+}
+
+async function gerarOpcoes() {
+
+    if (rodadaAtual > 5 || poolTotal.length < 2) {
+
+        comecarTransmissaoJogo();
+        return;
     }
 
-    function mudarTela(esconder, mostrar) {
-        document.getElementById(esconder).classList.remove("active");
-        document.getElementById(mostrar).classList.add("active");
+    document.getElementById("turno-jogador").innerText =
+        `Jogador ${jogadorAtual}: Escolha seu Atleta`;
+
+    document.getElementById("rodada-contagem").innerText =
+        `Rodada ${rodadaAtual} de 5`;
+
+    opcoesAtuais = [
+        poolTotal.pop(),
+        poolTotal.pop()
+    ];
+
+    // CARD 1
+
+    document.getElementById("nome1").innerText =
+        opcoesAtuais[0].nome;
+
+    document.getElementById("status1").innerText =
+        `Atq: ${opcoesAtuais[0].atq} | Def: ${opcoesAtuais[0].def}`;
+
+    if (opcoesAtuais[0].isGeneric) {
+
+        document.getElementById("img1").src =
+            SILHUETA_PADRAO;
+
+    } else {
+
+        buscarFotoJogador(opcoesAtuais[0].nome, "img1");
     }
 
-    async function gerarOpcoes() {
-        if (rodadaAtual > 5 || poolTotal.length < 2) {
-            comecarTransmissaoJogo();
+    // CARD 2
+
+    document.getElementById("nome2").innerText =
+        opcoesAtuais[1].nome;
+
+    document.getElementById("status2").innerText =
+        `Atq: ${opcoesAtuais[1].atq} | Def: ${opcoesAtuais[1].def}`;
+
+    if (opcoesAtuais[1].isGeneric) {
+
+        document.getElementById("img2").src =
+            SILHUETA_PADRAO;
+
+    } else {
+
+        buscarFotoJogador(opcoesAtuais[1].nome, "img2");
+    }
+}
+
+function escolherJogador(indice) {
+
+    const escolhido = opcoesAtuais[indice];
+
+    if (jogadorAtual === 1) {
+
+        time1.push(escolhido);
+
+        jogadorAtual = 2;
+
+    } else {
+
+        time2.push(escolhido);
+
+        jogadorAtual = 1;
+
+        rodadaAtual++;
+    }
+
+    gerarOpcoes();
+}
+
+function comecarTransmissaoJogo() {
+
+    mudarTela("tela-draft", "tela-jogo");
+
+    placar1 = 0;
+    placar2 = 0;
+
+    document.getElementById("ticker").innerHTML = "";
+
+    let atq1 =
+        time1.reduce((sum, j) => sum + j.atq, 0) / 5;
+
+    let def1 =
+        time1.reduce((sum, j) => sum + j.def, 0) / 5;
+
+    let atq2 =
+        time2.reduce((sum, j) => sum + j.atq, 0) / 5;
+
+    let def2 =
+        time2.reduce((sum, j) => sum + j.def, 0) / 5;
+
+    let lanceAtual = 0;
+
+    const totalLances = 20;
+
+    let intervalo = setInterval(() => {
+
+        if (lanceAtual >= totalLances) {
+
+            clearInterval(intervalo);
+
+            mostrarResultadoFinal();
+
             return;
         }
-        document.getElementById("turno-jogador").innerText = `Jogador ${jogadorAtual}: Escolha seu Atleta`;
-        document.getElementById("rodada-contagem").innerText = `Rodada ${rodadaAtual} de 5`;
 
-        opcoesAtuais = [poolTotal.pop(), poolTotal.pop()];
+        let quarto =
+            Math.floor(lanceAtual / 5) + 1;
 
-        document.getElementById("nome1").innerText = opcoesAtuais[0].nome;
-        document.getElementById("status1").innerText = `Atq: ${opcoesAtuais[0].atq} | Def: ${opcoesAtuais[0].def}`;
-        if (opcoesAtuais[0].isGeneric) {
-            document.getElementById("img1").src = SILHUETA_PADRAO;
-        } else {
-            document.getElementById("img1").src = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='100' height='100' viewBox='0 0 100 100'><text y='60' x='10' fill='white' font-size='12'>Carregando...</text></svg>";
-            buscarFotoJogador(opcoesAtuais[0].nome, "img1");
-        }
+        let minutos =
+            12 - ((lanceAtual % 5) * 2.4);
 
-        document.getElementById("nome2").innerText = opcoesAtuais[1].nome;
-        document.getElementById("nome2").innerText = opcoesAtuais[1].nome;
-        document.getElementById("status2").innerText = `Atq: ${opcoesAtuais[1].atq} | Def: ${opcoesAtuais[1].def}`;
-        
-        if (opcoesAtuais[1].isGeneric) {
-            document.getElementById("img2").src = SILHUETA_PADRAO;
-        } else {
-            document.getElementById("img2").src = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='100' height='100' viewBox='0 0 100 100'><text y='60' x='10' fill='white' font-size='12'>Carregando...</text></svg>";
-            buscarFotoJogador(opcoesAtuais[1].nome, "img2");
-        }
-    }
+        document.getElementById("cronometro").innerText =
+            `Q${quarto} | ${Math.floor(minutos)}:00`;
 
-    function escolherJogador(indice) {
-        let escolhido = opcoesAtuais[indice];
-        if (jogadorAtual === 1) {
-            time1.push(escolhido);
-            jogadorAtual = 2;
-        } else {
-            time2.push(escolhido);
-            jogadorAtual = 1;
-            rodadaAtual++;
-        }
-        gerarOpcoes();
-    }
+        let ticker =
+            document.getElementById("ticker");
 
-    function comecarTransmissaoJogo() {
-        mudarTela("tela-draft", "tela-jogo");
-        placar1 = 0; 
-        placar2 = 0;
-        document.getElementById("ticker").innerHTML = "";
-        
-        let atq1 = time1.reduce((sum, j) => sum + j.atq, 0) / 5;
-        let def1 = time1.reduce((sum, j) => sum + j.def, 0) / 5;
-        let atq2 = time2.reduce((sum, j) => sum + j.atq, 0) / 5;
-        let def2 = time2.reduce((sum, j) => sum + j.def, 0) / 5;
-        
-        let lanceAtual = 0;
-        const totalLances = 20;
-        
-        let intervalo = setInterval(() => {
-            if (lanceAtual >= totalLances) {
-                clearInterval(intervalo);
-                mostrarResultadoFinal();
-                return;
-            }
-            
-            let quarto = Math.floor(lanceAtual / 5) + 1;
-            let minutos = 12 - ((lanceAtual % 5) * 2.4);
-            document.getElementById("cronometro").innerText = `Q${quarto} | ${Math.floor(minutos)}:00`;
-            
-            let ticker = document.getElementById("ticker");
-            let textoLance = "";
-            
-            if (lanceAtual % 2 === 0) {
-                let j = time1[Math.floor(Math.random() * 5)];
-                let chance = Math.floor(Math.random() * 60) + 40 + (atq1 - def2);
-                if (chance > 66) {
-                    let pts = Math.random() > 0.7 ? 3 : 2;
-                    placar1 += pts;
-                    textoLance = `[JOGADOR 1] 🔥 Cesta de ${j.nome}! Mais ${pts} pontos convertidos.`;
-                } else {
-                    textoLance = `[JOGADOR 1] ❌ Errou! O ataque parou na forte defesa adversária.`;
-                }
+        let textoLance = "";
+
+        if (lanceAtual % 2 === 0) {
+
+            let j =
+                time1[Math.floor(Math.random() * 5)];
+
+            let chance =
+                Math.floor(Math.random() * 60) +
+                40 +
+                (atq1 - def2);
+
+            if (chance > 66) {
+
+                let pts =
+                    Math.random() > 0.7 ? 3 : 2;
+
+                placar1 += pts;
+
+                textoLance =
+                    `[JOGADOR 1] 🔥 ${j.nome} converteu ${pts} pontos!`;
+
             } else {
-                let j = time2[Math.floor(Math.random() * 5)];
-                let chance = Math.floor(Math.random() * 60) + 40 + (atq2 - def1);
-                if (chance > 66) {
-                    let pts = Math.random() > 0.7 ? 3 : 2;
-                    placar2 += pts;
-                    textoLance = `[JOGADOR 2] 🔥 Convertido! ${j.nome} acertou uma grande jogada de ${pts} pontos.`;
-                } else {
-                    textoLance = `[JOGADOR 2] ❌ Errou! Posse perdida e erro de arremesso.`;
-                }
+
+                textoLance =
+                    `[JOGADOR 1] ❌ Errou o arremesso!`;
             }
-            
-            document.getElementById("placar1-live").innerText = placar1;
-            document.getElementById("placar2-live").innerText = placar2;
-            ticker.innerHTML = `<div class="ticker-entry">${textoLance}</div>` + ticker.innerHTML;
-            lanceAtual++;
-        }, 1200);
+
+        } else {
+
+            let j =
+                time2[Math.floor(Math.random() * 5)];
+
+            let chance =
+                Math.floor(Math.random() * 60) +
+                40 +
+                (atq2 - def1);
+
+            if (chance > 66) {
+
+                let pts =
+                    Math.random() > 0.7 ? 3 : 2;
+
+                placar2 += pts;
+
+                textoLance =
+                    `[JOGADOR 2] 🔥 ${j.nome} marcou ${pts} pontos!`;
+
+            } else {
+
+                textoLance =
+                    `[JOGADOR 2] ❌ Perdeu a posse!`;
+            }
+        }
+
+        document.getElementById("placar1-live").innerText =
+            placar1;
+
+        document.getElementById("placar2-live").innerText =
+            placar2;
+
+        ticker.innerHTML =
+            `<div class="ticker-entry">${textoLance}</div>`
+            + ticker.innerHTML;
+
+        lanceAtual++;
+
+    }, 1200);
+}
+
+function mostrarResultadoFinal() {
+
+    mudarTela("tela-jogo", "tela-resultado");
+
+    document.getElementById("placar1-final").innerText =
+        placar1;
+
+    document.getElementById("placar2-final").innerText =
+        placar2;
+
+    let resultado = "";
+
+    if (placar1 > placar2) {
+
+        resultado =
+            "🎉 JOGADOR 1 VENCEU A PARTIDA!";
+
+    } else if (placar2 > placar1) {
+
+        resultado =
+            "🎉 JOGADOR 2 VENCEU A PARTIDA!";
+
+    } else {
+
+        resultado =
+            "🤝 EMPATE HISTÓRICO!";
     }
 
-    function mostrarResultadoFinal() {
-        mudarTela("tela-jogo", "tela-resultado");
-        document.getElementById("placar1-final").innerText = placar1;
-        document.getElementById("placar2-final").innerText = placar2;
-        
-        let res = "";
-        if (placar1 > placar2) res = "🎉 JOGADOR 1 VENCEU A PARTIDA!";
-        else if (placar2 > placar1) res = "🎉 JOGADOR 2 VENCEU A PARTIDA!";
-        else res = "🤝 EMPATE HISTÓRICO!";
-        
-        document.getElementById("vencedor").innerText = res;
-    }
+    document.getElementById("vencedor").innerText =
+        resultado;
+}
 
-    function reiniciarJogo() {
-        mudarTela("tela-resultado", "tela-inicial");
-    }
+function reiniciarJogo() {
+
+    mudarTela("tela-resultado", "tela-inicial");
+}
+
+</script>
+
+</body>
+</html>
