@@ -169,7 +169,9 @@
         }
 
         document.getElementById("nome2").innerText = opcoesAtuais[1].nome;
+        document.getElementById("nome2").innerText = opcoesAtuais[1].nome;
         document.getElementById("status2").innerText = `Atq: ${opcoesAtuais[1].atq} | Def: ${opcoesAtuais[1].def}`;
+        
         if (opcoesAtuais[1].isGeneric) {
             document.getElementById("img2").src = SILHUETA_PADRAO;
         } else {
@@ -193,31 +195,32 @@
 
     function comecarTransmissaoJogo() {
         mudarTela("tela-draft", "tela-jogo");
-        placar1 = 0; placar2 = 0;
+        placar1 = 0; 
+        placar2 = 0;
         document.getElementById("ticker").innerHTML = "";
-
+        
         let atq1 = time1.reduce((sum, j) => sum + j.atq, 0) / 5;
         let def1 = time1.reduce((sum, j) => sum + j.def, 0) / 5;
         let atq2 = time2.reduce((sum, j) => sum + j.atq, 0) / 5;
         let def2 = time2.reduce((sum, j) => sum + j.def, 0) / 5;
-
+        
         let lanceAtual = 0;
         const totalLances = 20;
-
+        
         let intervalo = setInterval(() => {
             if (lanceAtual >= totalLances) {
                 clearInterval(intervalo);
                 mostrarResultadoFinal();
                 return;
             }
-
+            
             let quarto = Math.floor(lanceAtual / 5) + 1;
             let minutos = 12 - ((lanceAtual % 5) * 2.4);
             document.getElementById("cronometro").innerText = `Q${quarto} | ${Math.floor(minutos)}:00`;
-
+            
             let ticker = document.getElementById("ticker");
             let textoLance = "";
-
+            
             if (lanceAtual % 2 === 0) {
                 let j = time1[Math.floor(Math.random() * 5)];
                 let chance = Math.floor(Math.random() * 60) + 40 + (atq1 - def2);
@@ -239,7 +242,7 @@
                     textoLance = `[JOGADOR 2] ❌ Errou! Posse perdida e erro de arremesso.`;
                 }
             }
-
+            
             document.getElementById("placar1-live").innerText = placar1;
             document.getElementById("placar2-live").innerText = placar2;
             ticker.innerHTML = `<div class="ticker-entry">${textoLance}</div>` + ticker.innerHTML;
@@ -251,7 +254,7 @@
         mudarTela("tela-jogo", "tela-resultado");
         document.getElementById("placar1-final").innerText = placar1;
         document.getElementById("placar2-final").innerText = placar2;
-
+        
         let res = "";
         if (placar1 > placar2) res = "🎉 JOGADOR 1 VENCEU A PARTIDA!";
         else if (placar2 > placar1) res = "🎉 JOGADOR 2 VENCEU A PARTIDA!";
