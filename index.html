@@ -346,40 +346,55 @@ async function buscarFotoJogador(nomeJogador, idImg) {
 
     const elementoImg = document.getElementById(idImg);
 
-    try {
+    const imagens = {
 
-        const url =
-`https://pt.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(nomeJogador)}&prop=pageimages&format=json&pithumbsize=300&origin=*`;
+        "Michael Jordan":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/893.png",
 
-        const resposta = await fetch(url);
+        "LeBron James":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/2544.png",
 
-        const dados = await resposta.json();
+        "Stephen Curry":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/201939.png",
 
-        const paginas = dados.query.pages;
+        "Kobe Bryant":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/977.png",
 
-        const paginaId = Object.keys(paginas)[0];
+        "Kevin Durant":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/201142.png",
 
-        if (
-            paginaId !== "-1" &&
-            paginas[paginaId].thumbnail
-        ) {
+        "Giannis Antetokounmpo":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/203507.png",
 
-            elementoImg.src =
-            paginas[paginaId].thumbnail.source;
+        "Nikola Jokic":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/203999.png",
 
-        } else {
+        "Luka Doncic":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/1629029.png",
 
-            elementoImg.src = SILHUETA_PADRAO;
-        }
+        "Victor Wembanyama":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/1641705.png",
 
-    } catch (e) {
+        "Kawhi Leonard":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/202695.png",
 
-        console.error("Erro:", e);
+        "Dwyane Wade":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/2548.png",
 
-        elementoImg.src = SILHUETA_PADRAO;
+        "Chris Paul":
+        "https://cdn.nba.com/headshots/nba/latest/1040x760/101108.png"
+    };
+
+    if (imagens[nomeJogador]) {
+
+        elementoImg.src = imagens[nomeJogador];
+
+    } else {
+
+        elementoImg.src =
+        "https://via.placeholder.com/140x140?text=NBA";
     }
 }
-
 function mudarTela(esconder, mostrar) {
 
     document.getElementById(esconder)
