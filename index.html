@@ -10,7 +10,7 @@
         h1 { color: #45f3ff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
         .subtitle { color: #66fcf1; font-size: 14px; margin-bottom: 30px; }
         .game-section { display: none; }
-        .active { display: block; }
+        .active { display: block !important; }
         .options-container { display: flex; justify-content: space-around; margin: 30px 0; }
         .card { background: #0b0c10; padding: 25px; border-radius: 12px; width: 42%; cursor: pointer; transition: all 0.3s ease; border: 2px solid #45f3ff; }
         .card:hover { transform: translateY(-5px); background: #45f3ff; color: #0b0c10; box-shadow: 0 0 15px #45f3ff; }
@@ -75,7 +75,6 @@
 </div>
 
 <script>
-    // Lista integrada com os astros reais mais importantes da história
     const BANCO_JOGADORES = [
         {nome:"Michael Jordan",atq:99,def:98},{nome:"LeBron James",atq:98,def:92},{nome:"Kobe Bryant",atq:97,def:94},{nome:"Stephen Curry",atq:99,def:75},
         {nome:"Shaquille O'Neal",atq:98,def:90},{nome:"Kareem Abdul-Jabbar",atq:97,def:93},{nome:"Magic Johnson",atq:96,def:85},{nome:"Larry Bird",atq:96,def:88},
@@ -89,7 +88,6 @@
         {nome:"Jimmy Butler",atq:89,def:92},{nome:"Paul George",atq:89,def:88},{nome:"Devin Booker",atq:91,def:76},{nome:"Klay Thompson",atq:89,def:85}
     ];
 
-    // Algoritmo gerador que cria automaticamente combinações de nomes de outros milhares de atletas reais da história
     const FN = ["John","Robert","James","Charles","David","Michael","William","Brian","Gary","Alonzo","Dennis","Paul","Ray","Steve","Jason","Carmelo","Yao","Derrick","Amar'e","Baron","Muggsy","Manute","Hedo","Vlade","Peja","Dikembe","Shawn","Bill","Wilmot","Tree","Hot","Clyde"];
     const LN = ["Smith","Jones","Brown","Johnson","Williams","Miller","Davis","Robinson","Barkley","Rodman","Pierce","Allen","Nash","Kidd","Anthony","McGrady","Ming","Rose","Stoudemire","Davis","Walker","Bogues","Bol","Turkoglu","Divac","Stojakovic","Mutombo","Kemp","Russell","Draxler","Rollins","Rodman"];
 
@@ -111,7 +109,6 @@
 
     function carregarEIniciar() {
         poolTotal = [...BANCO_JOGADORES];
-        // Adiciona 200 atletas extras baseados em nomes históricos para garantir variedade infinita
         for(let i=0; i<200; i++) {
             poolTotal.push(gerarJogadorHistorico());
         }
@@ -124,7 +121,6 @@
     }
 
     function mudarTela(esconder, mostrar) {
-        document.getElementById(esconder).classList.remove("none");
         document.getElementById(esconder).classList.remove("active");
         document.getElementById(mostrar).classList.add("active");
     }
@@ -186,46 +182,46 @@
 
             if (lanceAtual % 2 === 0) {
                 let j = time1[Math.floor(Math.random() * 5)];
-                let chance = Math.floor(Math.random() * 60) + 40 + (atq1 - def2);
-                if (chance > 66) {
-                    let pts = Math.random() > 0.7 ? 3 : 2;
-                    placar1 += pts;
-                    textoLance = `[JOGADOR 1] 🔥 Cesta de ${j.nome}! Mais ${pts} pontos convertidos.`;
-                } else {
-                    textoLance = `[JOGADOR 1] ❌ Errou! O ataque parou na forte defesa adversária.`;
-                }
+            let chance = Math.floor(Math.random() * 60) + 40 + (atq1 - def2);
+            if (chance > 66) {
+                let pts = Math.random() > 0.7 ? 3 : 2;
+                placar1 += pts;
+                textoLance = `[JOGADOR 1] 🔥 Cesta de ${j.nome}! Mais ${pts} pontos convertidos.`;
             } else {
-                let j = time2[Math.floor(Math.random() * 5)];
-                let chance = Math.floor(Math.random() * 60) + 40 + (atq2 - def1);
-                if (chance > 66) {
-                    let pts = Math.random() > 0.7 ? 3 : 2;
-                    placar2 += pts;
-                    textoLance = `[JOGADOR 2] 🔥 Convertido! ${j.nome} acertou uma grande jogada de ${pts} pontos.`;
-                } else {
-                    textoLance = `[JOGADOR 2] ❌ Errou! Posse perdida e erro de arremesso.`;
-                }
+                textoLance = `[JOGADOR 1] ❌ Errou! O ataque parou na forte defesa adversária.`;
             }
+        } else {
+            let j = time2[Math.floor(Math.random() * 5)];
+            let chance = Math.floor(Math.random() * 60) + 40 + (atq2 - def1);
+            if (chance > 66) {
+                let pts = Math.random() > 0.7 ? 3 : 2;
+                placar2 += pts;
+                textoLance = `[JOGADOR 2] 🔥 Convertido! ${j.nome} acertou uma grande jogada de ${pts} pontos.`;
+            } else {
+                textoLance = `[JOGADOR 2] ❌ Errou! Posse perdida e erro de arremesso.`;
+            }
+        }
 
-            document.getElementById("placar1-live").innerText = placar1;
-            document.getElementById("placar2-live").innerText = placar2;
-            ticker.innerHTML = `<div class="ticker-entry">${textoLance}</div>` + ticker.innerHTML;
-            lanceAtual++;
-        }, 1200);
-    }
+        document.getElementById("placar1-live").innerText = placar1;
+        document.getElementById("placar2-live").innerText = placar2;
+        ticker.innerHTML = `<div class="ticker-entry">${textoLance}</div>` + ticker.innerHTML;
+        lanceAtual++;
+    }, 1200);
+}
 
-    function mostrarResultadoFinal() {
-        mudarTela("tela-jogo", "tela-resultado");
-        document.getElementById("placar1-final").innerText = placar1;
-        document.getElementById("placar2-final").innerText = placar2;
+function mostrarResultadoFinal() {
+    mudarTela("tela-jogo", "tela-resultado");
+    document.getElementById("placar1-final").innerText = placar1;
+    document.getElementById("placar2-final").innerText = placar2;
 
-        let res = "";
-        if (placar1 > placar2) res = "🎉 JOGADOR 1 VENCEU A PARTIDA!";
-        else if (placar2 > placar1) res = "🎉 JOGADOR 2 VENCEU A PARTIDA!";
-        else res = "🤝 EMPATE HISTÓRICO!";
-        
-        document.getElementById("vencedor").innerText = res;
-    }
+    let res = "";
+    if (placar1 > placar2) res = "🎉 JOGADOR 1 VENCEU A PARTIDA!";
+    else if (placar2 > placar1) res = "🎉 JOGADOR 2 VENCEU A PARTIDA!";
+    else res = "🤝 EMPATE HISTÓRICO!";
+    
+    document.getElementById("vencedor").innerText = res;
+}
 
-    function reiniciarJogo() { 
-        mudarTela("tela-resultado", "tela-inicial"); 
-    }
+function reiniciarJogo() {
+    mudarTela("tela-resultado", "tela-inicial");
+}
