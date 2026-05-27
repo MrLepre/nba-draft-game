@@ -179,4 +179,53 @@
 
             let quarto = Math.floor(lanceAtual / 5) + 1;
             let minutos = 12 - ((lanceAtual % 5) * 2.4);
-            document.getElementById("cronometro").innerText = Q${quarto} | ${Math.floor(minutos)}:00;let ticker = document.getElementById("ticker");let textoLance = "";if (lanceAtual % 2 === 0) {let j = time1[Math.floor(Math.random() * 5)];let chance = Math.floor(Math.random() * 60) + 40 + (atq1 - def2);if (chance > 66) {let pts = Math.random() > 0.7 ? 3 : 2;placar1 += pts;textoLance = [JOGADOR 1] 🔥 Cesta de ${j.nome}! Mais ${pts} pontos convertidos.;} else {textoLance = [JOGADOR 1] ❌ Errou! O ataque parou na forte defesa adversária.;}} else {let j = time2[Math.floor(Math.random() * 5)];let chance = Math.floor(Math.random() * 60) + 40 + (atq2 - def1);if (chance > 66) {let pts = Math.random() > 0.7 ? 3 : 2;placar2 += pts;textoLance = [JOGADOR 2] 🔥 Convertido! ${j.nome} acertou uma grande jogada de ${pts} pontos.;} else {textoLance = [JOGADOR 2] ❌ Errou! Posse perdida e erro de arremesso.;}}document.getElementById("placar1-live").innerText = placar1;document.getElementById("placar2-live").innerText = placar2;ticker.innerHTML = <div class="ticker-entry">${textoLance}</div> + ticker.innerHTML;lanceAtual++;}, 1200);}function mostrarResultadoFinal() {mudarTela("tela-jogo", "tela-resultado");document.getElementById("placar1-final").innerText = placar1;document.getElementById("placar2-final").innerText = placar2;let res = "";if (placar1 > placar2) res = "🎉 JOGADOR 1 VENCEU A PARTIDA!";else if (placar2 > placar1) res = "🎉 JOGADOR 2 VENCEU A PARTIDA!";else res = "🤝 EMPATE HISTÓRICO!";document.getElementById("vencedor").innerText = res;}function reiniciarJogo() { mudarTela("tela-resultado", "tela-inicial"); }
+            document.getElementById("cronometro").innerText = `Q${quarto} | ${Math.floor(minutos)}:00`;
+
+            let ticker = document.getElementById("ticker");
+            let textoLance = "";
+
+            if (lanceAtual % 2 === 0) {
+                let j = time1[Math.floor(Math.random() * 5)];
+                let chance = Math.floor(Math.random() * 60) + 40 + (atq1 - def2);
+                if (chance > 66) {
+                    let pts = Math.random() > 0.7 ? 3 : 2;
+                    placar1 += pts;
+                    textoLance = `[JOGADOR 1] 🔥 Cesta de ${j.nome}! Mais ${pts} pontos convertidos.`;
+                } else {
+                    textoLance = `[JOGADOR 1] ❌ Errou! O ataque parou na forte defesa adversária.`;
+                }
+            } else {
+                let j = time2[Math.floor(Math.random() * 5)];
+                let chance = Math.floor(Math.random() * 60) + 40 + (atq2 - def1);
+                if (chance > 66) {
+                    let pts = Math.random() > 0.7 ? 3 : 2;
+                    placar2 += pts;
+                    textoLance = `[JOGADOR 2] 🔥 Convertido! ${j.nome} acertou uma grande jogada de ${pts} pontos.`;
+                } else {
+                    textoLance = `[JOGADOR 2] ❌ Errou! Posse perdida e erro de arremesso.`;
+                }
+            }
+
+            document.getElementById("placar1-live").innerText = placar1;
+            document.getElementById("placar2-live").innerText = placar2;
+            ticker.innerHTML = `<div class="ticker-entry">${textoLance}</div>` + ticker.innerHTML;
+            lanceAtual++;
+        }, 1200);
+    }
+
+    function mostrarResultadoFinal() {
+        mudarTela("tela-jogo", "tela-resultado");
+        document.getElementById("placar1-final").innerText = placar1;
+        document.getElementById("placar2-final").innerText = placar2;
+
+        let res = "";
+        if (placar1 > placar2) res = "🎉 JOGADOR 1 VENCEU A PARTIDA!";
+        else if (placar2 > placar1) res = "🎉 JOGADOR 2 VENCEU A PARTIDA!";
+        else res = "🤝 EMPATE HISTÓRICO!";
+        
+        document.getElementById("vencedor").innerText = res;
+    }
+
+    function reiniciarJogo() { 
+        mudarTela("tela-resultado", "tela-inicial"); 
+    }
